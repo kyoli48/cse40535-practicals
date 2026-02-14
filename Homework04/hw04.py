@@ -20,7 +20,7 @@ gray = cv2.imread("pattern.png",cv2.IMREAD_GRAYSCALE)
 #    ktype  - type and range of values that each pixel in the gabor kernel can hold; keep it cv2.CV_32F
 
 # ***TASK*** Select parameters of your Gabor kernel here:
-ksize = 15      # try something between 5 and 15
+ksize = 7       # try something between 5 and 15
 sigma = 4.0     # try something between 2.0 and 4.0
 theta = 0.0     # keep it 0.0 if you want to focus on vertically-oriented patterns
 lbd = 4.0       # try something between 2.0 and 4.0
@@ -60,13 +60,17 @@ th2, res2 = cv2.threshold(res1,0,255,cv2.THRESH_BINARY+cv2.THRESH_OTSU)
 # ***TASK*** Choose the type among cv2.MORPH_CLOSE, cv2.MORPH_OPEN, cv2.MORPH_ERODE or cv2.MORPH_DILATE
 # (or a sequence of those, in the order you think makes sense)
 
-se_size = 11  # size of your structuring element (morphological operation kernel) -- try something between 5 and 15
-se = np.ones((se_size,se_size), np.uint8)
+se_small = np.ones((3,3), np.uint8)
+se_med = np.ones((9,9), np.uint8)
 
-# Use MORPH_CLOSE to fill small holes and connect nearby vertical regions,
-# then DILATE to make the detected regions more solid
-res3_temp = cv2.morphologyEx(res2, cv2.MORPH_CLOSE, kernel=se)
-res3 = cv2.morphologyEx(res3_temp, cv2.MORPH_DILATE, kernel=se)
+# MORPH_CLOSE with small kernel to locally connect nearby white pixels
+res3 = cv2.morphologyEx(res2, cv2.MORPH_CLOSE, kernel=se_small, iterations=3)
+# MORPH_OPEN with tiny kernel to gently remove sparse noise
+res3 = cv2.morphologyEx(res3, cv2.MORPH_OPEN, kernel=se_small, iterations=1)
+# MORPH_CLOSE to solidify blocks
+res3 = cv2.morphologyEx(res3, cv2.MORPH_CLOSE, kernel=se_med, iterations=2)
+# MORPH_ERODE to tighten boundaries and sharpen edges
+res3 = cv2.morphologyEx(res3, cv2.MORPH_ERODE, kernel=se_small, iterations=3)
 
 # Save the results for documentation
 cv2.imwrite("result_step1_filtering.png", res1)

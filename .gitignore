@@ -19,6 +19,9 @@
 *.tiff
 *.svg
 
+# Exception: include Homework04 result images for submission
+!Homework04/*.png
+
 # Python cache
 __pycache__/
 *.py[cod]

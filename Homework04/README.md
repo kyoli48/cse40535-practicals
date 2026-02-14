@@ -20,7 +20,7 @@ This homework implements a computer vision pipeline to detect and segment region
 ### Step 1: Gabor Kernel Configuration
 
 **Selected Parameters:**
-- `ksize = 15` - Kernel size (15×15 pixels)
+- `ksize = 7` - Kernel size (7×7 pixels)
 - `sigma = 4.0` - Gaussian envelope width
 - `theta = 0.0` - Vertical orientation (0° = vertical stripes)
 - `lambda = 4.0` - Wavelength matching stripe spacing
@@ -28,8 +28,8 @@ This homework implements a computer vision pipeline to detect and segment region
 - `psi = 0.0` - Phase offset
 
 **Rationale:**
-- Larger kernel size (15) captures more context for pattern detection
-- Higher sigma (4.0) provides broader spatial support
+- Moderate kernel size (7) provides good orientation selectivity without over-smoothing
+- Sigma (4.0) gives broad spatial support relative to kernel size
 - Lambda (4.0) tuned to match the stripe wavelength in the pattern
 - Theta = 0.0 specifically targets vertical orientations
 
@@ -44,17 +44,20 @@ Used `cv2.threshold()` with `cv2.THRESH_OTSU` flag to automatically determine op
 ### Step 4: Morphological Operations
 
 **Selected Operations:**
-1. `cv2.MORPH_CLOSE` with 11×11 structuring element
-   - Fills small holes within detected regions
-   - Connects nearby vertical pattern areas
-2. `cv2.MORPH_DILATE` with 11×11 structuring element
-   - Solidifies detected regions
-   - Expands boundaries to consolidate fragmented detections
+1. `cv2.MORPH_CLOSE` with 3×3 kernel (3 iterations)
+   - Locally connects nearby white pixels from the binarization
+2. `cv2.MORPH_OPEN` with 3×3 kernel (1 iteration)
+   - Gently removes sparse noise pixels
+3. `cv2.MORPH_CLOSE` with 9×9 kernel (2 iterations)
+   - Solidifies detected regions into cohesive blocks
+4. `cv2.MORPH_ERODE` with 3×3 kernel (3 iterations)
+   - Tightens boundaries for more precise segmentation
 
 **Rationale:**
-- CLOSE operation connects fragmented vertical stripe regions
-- DILATE strengthens the final segmentation mask
-- 11×11 kernel size balances noise removal with region preservation
+- Small CLOSE first connects thin vertical line detections into wider regions
+- Gentle OPEN removes isolated noise without destroying small valid blocks
+- Larger CLOSE consolidates the connected regions into solid blocks
+- Final ERODE shrinks the blocks back to more precise boundaries
 
 ---
 
