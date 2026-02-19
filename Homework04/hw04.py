@@ -72,15 +72,26 @@ res3 = cv2.morphologyEx(res3, cv2.MORPH_CLOSE, kernel=se_med, iterations=2)
 # MORPH_ERODE to tighten boundaries and sharpen edges
 res3 = cv2.morphologyEx(res3, cv2.MORPH_ERODE, kernel=se_small, iterations=3)
 
+############################################################################
+# Step 5 (Bonus): Edge detection to demarcate vertical pattern regions
+# Use Canny edge detection on the morphological result, then overlay on original image
+
+# Find contours of the morphological mask and draw white edges on black background
+contours, _ = cv2.findContours(res3, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+res4 = np.zeros_like(gray)
+cv2.drawContours(res4, contours, -1, 255, 2)
+
 # Save the results for documentation
 cv2.imwrite("result_step1_filtering.png", res1)
 cv2.imwrite("result_step2_binarization.png", res2)
 cv2.imwrite("result_step3_morphological.png", res3)
+cv2.imwrite("result_step4_edges.png", res4)
 
 print("\nResults saved:")
 print("  - result_step1_filtering.png")
 print("  - result_step2_binarization.png")
-print("  - result_step3_morphological.png (final result)")
+print("  - result_step3_morphological.png")
+print("  - result_step4_edges.png (bonus - edge detection)")
 
 # Display windows if GUI is available (comment out for headless execution)
 # Uncomment the following lines to view results interactively:
