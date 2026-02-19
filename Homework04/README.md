@@ -86,6 +86,11 @@ Binary mask after automatic thresholding. White pixels represent detected vertic
 
 Final segmentation after morphological cleanup. Consolidated regions mark areas with vertical stripe patterns.
 
+### Step 4 (Bonus): Edge Detection
+![Edge Detection Result](result_step4_edges.png)
+
+Contours extracted from the morphological mask using `cv2.findContours()`, drawn as white edges on a black background. This demarcates the boundaries of regions containing vertical stripe patterns.
+
 ### Gabor Kernel Visualization
 ![Gabor Kernel 3D](gabor_kernel_visualization.png)
 
@@ -118,6 +123,7 @@ python hw04.py
 - `result_step1_filtering.png` - Gabor filter response
 - `result_step2_binarization.png` - Binary segmentation mask
 - `result_step3_morphological.png` - Final cleaned result
+- `result_step4_edges.png` - Bonus: edge detection contours
 - `gabor_kernel_visualization.png` - 3D kernel visualization
 
 ---
